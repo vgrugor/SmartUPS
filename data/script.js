@@ -1,53 +1,45 @@
-// Complete project details: https://randomnerdtutorials.com/esp8266-nodemcu-web-server-websocket-sliders/
+document.addEventListener("DOMContentLoaded", function() {
+    function loadStatus() {
+        fetch('/api/status')
+        .then(response => response.json())
+        .then(data => {
+        let statusDiv = document.getElementById('status');
 
-var gateway = `ws://${window.location.hostname}/ws`;
-var websocket;
-window.addEventListener('load', onload);
-
-function onload(event) {
-    initWebSocket();
-}
-
-function getValues(){
-    websocket.send("getValues");
-}
-
-function initWebSocket() {
-    console.log('Trying to open a WebSocket connection…');
-    websocket = new WebSocket(gateway);
-    websocket.onopen = onOpen;
-    websocket.onclose = onClose;
-    websocket.onmessage = onMessage;
-}
-
-function onOpen(event) {
-    console.log('Connection opened');
-    getValues();
-}
-
-function onClose(event) {
-    console.log('Connection closed');
-    setTimeout(initWebSocket, 2000);
-}
-
-function updateSliderPWM(element) {
-    var sliderNumber = element.id.charAt(element.id.length-1);
-    var sliderValue = document.getElementById(element.id).value;
-    document.getElementById("sliderValue"+sliderNumber).innerHTML = sliderValue;
-    console.log(sliderValue);
-    websocket.send(sliderNumber+"s"+sliderValue.toString());
-}
-
-function onMessage(event) {
-    console.log(event.data);
-    var myObj = JSON.parse(event.data);
-    var keys = Object.keys(myObj);
-
-    for (var i = 0; i < keys.length; i++){
-        var key = keys[i];
-        document.getElementById(key).innerHTML = myObj[key];
-        if (document.getElementById("slider"+ (i+1))) {
-            document.getElementById("slider"+ (i+1).toString()).value = myObj[key];
-        }
+        statusDiv.innerHTML = `
+            <p>Power Source: <strong>${data.powerSource === "mains" ? "Mains ⚡" : "Battery 🔋"}</strong></p>
+            <p>Battery Level: ${data.batteryLevel}%</p>
+            <p>Router is ${data.routerState.toUpperCase()}</p>
+            <p>Current Hour: ${data.currentHour}</p>
+        `;
+        });
     }
-}
+
+    document.getElementById('togglePower').addEventListener('click', function() {
+        fetch('/api/togglePower', { method: 'POST' })
+        .then(() => loadStatus());
+    });
+
+    document.getElementById('setTimeBtn').addEventListener('click', function() {
+        let hour = document.getElementById('hourInput').value;
+        fetch('/api/setTime', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `hour=${encodeURIComponent(hour)}`
+        })
+        .then(() => loadStatus());
+    });
+
+    document.getElementById('setSettingsBtn').addEventListener('click', function() {
+        let startHour = document.getElementById('startHourInput').value;
+        let endHour = document.getElementById('endHourInput').value;
+        fetch('/api/setSettings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: `startHour=${encodeURIComponent(startHour)}&endHour=${encodeURIComponent(endHour)}`
+        })
+        .then(() => loadStatus());
+    });
+
+    // Инициализируем статус при загрузке
+    loadStatus();
+    });

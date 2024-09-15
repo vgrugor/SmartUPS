@@ -17,11 +17,21 @@ WebInterface::WebInterface(
 {}
 
 void WebInterface::begin() {
+    // Инициализация LittleFS
+    if (!LittleFS.begin()) {
+        Serial.println("An error has occurred while mounting LittleFS");
+        return;
+    }
+
+    Serial.println("LittleFS mounted successfully");
+
     // Настройка обработчиков
-    _server.on("/", std::bind(&WebInterface::handleRoot, this));
-    _server.on("/setTime", std::bind(&WebInterface::handleSetTime, this));
-    _server.on("/setSettings", std::bind(&WebInterface::handleSetSettings, this));
-    _server.on("/togglePower", std::bind(&WebInterface::handleTogglePower, this));
+    _server.on("/", HTTP_GET, std::bind(&WebInterface::handleRoot, this));
+    _server.on("/api/status", HTTP_GET, std::bind(&WebInterface::handleGetStatus, this));
+    _server.on("/api/togglePower", HTTP_POST, std::bind(&WebInterface::handleTogglePower, this));
+    _server.on("/api/setTime", HTTP_POST, std::bind(&WebInterface::handleSetTime, this));
+    _server.on("/api/setSettings", HTTP_POST, std::bind(&WebInterface::handleSetSettings, this));
+    _server.onNotFound(std::bind(&WebInterface::handleNotFound, this));
     _server.begin();
 }
 
@@ -30,79 +40,70 @@ void WebInterface::handleClient() {
 }
 
 void WebInterface::handleRoot() {
-    String html = "<html><head><title>Router Control</title></head><body>";
-    html += "<h1>Router Control Panel</h1>";
+    File file = LittleFS.open("/index.html", "r");
 
-    // Отображение режима питания
-    if (_powerSupplyMonitor.isMainsPower()) {
-        html += "<p>Power Source: <strong>Mains</strong> ⚡</p>";
-    } else {
-        html += "<p>Power Source: <strong>Battery</strong> 🔋</p>";
+    if (!file) {
+        _server.send(500, "text/plain", "File not found");
+
+        return;
     }
 
-    // Уровень заряда батареи
-    html += "<p>Battery Level: " + String(_batteryMonitor.getChargeLevel()) + "%</p>";
-
-    // Текущее время
-    html += "<p>Current Hour: " + String(_timeManager.getHour()) + "</p>";
-
-    // Переключатель питания роутера
-    html += "<p>Router is " + String(_powerController.isOn() ? "ON" : "OFF") + "</p>";
-    html += "<form action='/togglePower' method='post'><button type='submit'>Toggle Power</button></form>";
-
-    // Форма для установки времени
-    html += "<form action='/setTime' method='post'>Set Hour: <input type='number' name='hour' min='0' max='23'/><button type='submit'>Set Time</button></form>";
-
-    // Форма для настройки интервала автоотключения
-    html += "<form action='/setSettings' method='post'>Auto-Off Start Hour: <input type='number' name='startHour' min='0' max='23'/>";
-    html += " End Hour: <input type='number' name='endHour' min='0' max='23'/><button type='submit'>Set Auto-Off Interval</button></form>";
-    html += "</body></html>";
-
-    _server.send(200, "text/html", html);
+    _server.streamFile(file, "text/html");
+    file.close();
 }
 
-void WebInterface::handleSetTime() {
-    if (_server.hasArg("hour")) {
-        uint8_t hour = _server.arg("hour").toInt();
-        _timeManager.setHour(hour);
-    }
+void WebInterface::handleNotFound() {
+    if (LittleFS.exists(_server.uri())) {
+        File file = LittleFS.open(_server.uri(), "r");
 
-    _server.sendHeader("Location", "/");
-    _server.send(303); // Перенаправление
+        if (file) {
+            String contentType = "text/plain";
+            if (_server.uri().endsWith(".html")) contentType = "text/html";
+            else if (_server.uri().endsWith(".css")) contentType = "text/css";
+            else if (_server.uri().endsWith(".js")) contentType = "application/javascript";
+            else if (_server.uri().endsWith(".png")) contentType = "image/png";
+            else if (_server.uri().endsWith(".jpg") || _server.uri().endsWith(".jpeg")) contentType = "image/jpeg";
+
+            _server.streamFile(file, contentType);
+            file.close();
+
+            return;
+        }
+    }
+    _server.send(404, "text/plain", "Not Found");
 }
 
-void WebInterface::handleSetSettings() {
-    if (_server.hasArg("startHour") && _server.hasArg("endHour")) {
-        uint8_t startHour = _server.arg("startHour").toInt();
-        uint8_t endHour = _server.arg("endHour").toInt();
-        _settings.setAutoOffInterval(startHour, endHour);
-        _settings.save();
-    }
+void WebInterface::handleGetStatus() {
+    String json = "{";
+    json += "\"powerSource\":\"" + String(_powerSupplyMonitor.isMainsPower() ? "mains" : "battery") + "\",";
+    json += "\"batteryLevel\":" + String(_batteryMonitor.getChargeLevel()) + ",";
+    json += "\"routerState\":\"" + String(_powerController.isOn() ? "on" : "off") + "\",";
+    json += "\"currentHour\":" + String(_timeManager.getHour());
+    json += "}";
 
-    _server.sendHeader("Location", "/");
-    _server.send(303); // Перенаправление
+    _server.send(200, "application/json", json);
 }
 
 void WebInterface::handleTogglePower() {
     bool powerState = _powerController.isOn();
-    // Переключаем состояние питания
 
+    // Переключаем состояние питания
     if (powerState) {
         _powerController.turnOff();
         // Отменяем запланированную задачу, если была
         //_scheduler.cancelTask(/* ссылка на задачу отключения */);
     } else {
         _powerController.turnOn();
-
+    
         // Проверяем, нужно ли добавить задачу на отключение через час
         uint8_t startHour, endHour;
         _settings.getAutoOffInterval(startHour, endHour);
         uint8_t currentHour = _timeManager.getHour();
 
         if (
-            _powerSupplyMonitor.isBatteryPower() &&
-            ((startHour <= endHour && currentHour >= startHour && currentHour < endHour) ||
-            (startHour > endHour && (currentHour >= startHour || currentHour < endHour)))
+            _powerSupplyMonitor.isBatteryPower() 
+            && ((startHour <= endHour && currentHour >= startHour && currentHour < endHour)
+            || (startHour > endHour && (currentHour >= startHour || currentHour < endHour)))
         ) {
             // Создаем задачу на отключение через час
             uint8_t offHour = (currentHour + 1) % 24; // Следующий час
@@ -111,6 +112,32 @@ void WebInterface::handleTogglePower() {
         }
     }
 
-    _server.sendHeader("Location", "/");
-    _server.send(303); // Перенаправление
+    // Возвращаем текущий статус
+    handleGetStatus();
+}
+
+void WebInterface::handleSetTime() {
+    if (_server.hasArg("hour")) {
+        uint8_t hour = _server.arg("hour").toInt();
+        _timeManager.setHour(hour);
+
+        // Возвращаем текущий статус
+        handleGetStatus();
+    } else {
+        _server.send(400, "text/plain", "Invalid parameters");
+    }
+}
+
+void WebInterface::handleSetSettings() {
+    if (_server.hasArg("startHour") && _server.hasArg("endHour")) {
+        uint8_t startHour = _server.arg("startHour").toInt();
+        uint8_t endHour = _server.arg("endHour").toInt();
+        _settings.setAutoOffInterval(startHour, endHour);
+        _settings.save();
+
+        // Возвращаем текущий статус
+        handleGetStatus();
+    } else {
+        _server.send(400, "text/plain", "Invalid parameters");
+    }
 }

@@ -1,87 +1,24 @@
-<!-- Complete project details: https://randomnerdtutorials.com/esp8266-nodemcu-web-server-websocket-sliders/ -->
-
 <!DOCTYPE html>
 <html>
-<head>
-    <title>ESP IOT DASHBOARD</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta charset="UTF-8">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="stylesheet" type="text/css" href="style.css">
-</head>
-<body>
-    <div class="content">
-        <div class="row">
-            <div>
-                <p class="state">
-                    <img src="outdoor.png" width="30px" height="30px">
-                    <span id="sliderValue7"></span> &deg;C
-                </p>
-                <p class="state">
-                    <img src="house.png" width="30px" height="30px">
-                    <span id="sliderValue6"></span> &deg;C
-                </p>
-            </div>
+    <head>
+        <meta charset="UTF-8">
+        <title>Router Control Panel</title>
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <h1>Router Control Panel</h1>
+        <div id="status">
+            <!-- Статус будет загружен через AJAX -->
         </div>
-        <div class="row">
-            <div class="column-1">
-                <p class="card-title">Всі</p>
-                <p class="switch">
-                    <input type="range" onchange="updateSliderPWM(this)" id="slider1" min="0" max="100" step="1" value ="0" class="slider">
-                </p>
-                <p class="state">
-                    <img src="light.png" width="30px" height="30px">
-                    <img src="light.png" width="30px" height="30px">
-                    <img src="light.png" width="30px" height="30px">
-                    <span id="sliderValue1"></span> &percnt;
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="column">
-                <p class="card-title">Лівий</p>
-                <p class="switch">
-                    <input type="range" onchange="updateSliderPWM(this)" id="slider3" min="0" max="100" step="1" value ="0" class="slider-vertical">
-                </p>
-                <p class="state">
-                    <img src="light.png" width="30px" height="30px">
-                    <span id="sliderValue3"></span> &percnt;
-                </p>
-            </div>
-            <div class="column">
-                <p class="card-title">Середній</p>
-                <p class="switch">
-                    <input type="range" onchange="updateSliderPWM(this)" id="slider4" min="0" max="100" step="1" value ="0" class="slider-vertical">
-                </p>
-                <p class="state">
-                    <img src="light.png" width="30px" height="30px">
-                    <span id="sliderValue4"></span> &percnt;
-                </p>
-            </div>
-            <div class="column">
-                <p class="card-title">Правий</p>
-                <p class="switch">
-                    <input type="range" onchange="updateSliderPWM(this)" id="slider5" min="0" max="100" step="1" value ="0" class="slider-vertical">
-                </p>
-                <p class="state">
-                    <img src="light.png" width="30px" height="30px">
-                    <span id="sliderValue5"></span> &percnt;
-                </p>
-            </div>
-        </div>
-        <div class="row">
-            <div class="column-1">
-                <p class="card-title">Таймер</p>
-                <p class="switch">
-                    <input type="range" onchange="updateSliderPWM(this)" id="slider2" min="0" max="60" step="5" value ="0" class="slider">
-                </p>
-                <p class="state">
-                    <img src="clock.png" width="30px" height="30px">
-                    <span id="sliderValue2"></span> хв
-                </p>
-            </div>
-        </div>
-    </div>
-    <script src="script.js"></script>
-</body>
+        <button id="togglePower">Toggle Power</button>
+        <h2>Set Time</h2>
+        <input type="number" id="hourInput" min="0" max="23">
+        <button id="setTimeBtn">Set Time</button>
+        <h2>Set Auto-Off Interval</h2>
+        <label for="startHourInput">Start Hour:</label>
+        <input type="number" id="startHourInput" min="0" max="23">
+        <label for="endHourInput">End Hour:</label>
+        <input type="number" id="endHourInput" min="0" max="23">
+        <button id="setSettingsBtn">Set Interval</button>
+    </body>
 </html>

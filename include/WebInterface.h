@@ -1,7 +1,8 @@
 #ifndef WEBINTERFACE_H
-    #define WEBINTERFACE_H
+#define WEBINTERFACE_H
 
     #include <ESP8266WebServer.h>
+    #include <LittleFS.h>
     #include "PowerController.h"
     #include "BatteryMonitor.h"
     #include "PowerSupplyMonitor.h"
@@ -24,9 +25,11 @@
             void handleClient();
         private:
             void handleRoot();
+            void handleNotFound();
+            void handleTogglePower();
             void handleSetTime();
             void handleSetSettings();
-            void handleTogglePower();
+            void handleGetStatus();
             ESP8266WebServer _server;
             PowerController &_powerController;
             BatteryMonitor &_batteryMonitor;
@@ -34,7 +37,6 @@
             TimeManager &_timeManager;
             Settings &_settings;
             Scheduler &_scheduler;
-            // Другие приватные члены
     };
 
 #endif // WEBINTERFACE_H
