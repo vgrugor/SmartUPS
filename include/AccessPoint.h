@@ -8,7 +8,7 @@
             AccessPoint(
                 const char* ssid,
                 const char* password, 
-                IPAddress local_ip = IPAddress(192, 168, 1, 1),
+                IPAddress local_ip = IPAddress(192, 168, 1, 10),
                 IPAddress gateway = IPAddress(192, 168, 1, 1),
                 IPAddress subnet = IPAddress(255, 255, 255, 0)
             );

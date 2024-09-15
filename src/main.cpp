@@ -13,7 +13,7 @@
 // Другие необходимые включения
 
 // Пины и конфигурации
-#define ROUTER_CONTROL_PIN D1
+#define ROUTER_CONTROL_PIN D6
 #define BATTERY_ANALOG_PIN A0
 #define POWER_SENSE_PIN D2
 
