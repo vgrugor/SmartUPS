@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Router Control Panel</title>
+        <script src="script.js"></script>
+    </head>
+    <body>
+        <h1>Router Control Panel</h1>
+        <div id="status">
+            <!-- Статус будет загружен через AJAX -->
+        </div>
+        <button id="togglePower">Toggle Power</button>
+        <h2>Set Time</h2>
+        <input type="number" id="hourInput" min="0" max="23">
+        <button id="setTimeBtn">Set Time</button>
+        <h2>Set Auto-Off Interval</h2>
+        <label for="startHourInput">Start Hour:</label>
+        <input type="number" id="startHourInput" min="0" max="23">
+        <label for="endHourInput">End Hour:</label>
+        <input type="number" id="endHourInput" min="0" max="23">
+        <button id="setSettingsBtn">Set Interval</button>
+    </body>
+</html>

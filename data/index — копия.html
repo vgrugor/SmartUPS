@@ -1,59 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
+    <title>Smart UPS</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Home Dashboard</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
+    <h1>Smart UPS</h1>
     <div class="content">
-        <!-- Блок текущих настроек -->
         <div class="row">
             <div class="column-1">
-                <p class="card-title">Налаштування:</p>
-                <p id="status" class="state">
+                <div id="status">
                     <!-- Статус будет загружен через AJAX -->
-                </p>
+                </div>
             </div>
         </div>
-
-        <!-- Тогл для включения/выключения интернета -->
         <div class="row">
             <div class="column-1">
                 <p class="card-title">Інтернет</p>
-                <label class="switch">
-                    <input type="checkbox" id="togglePower" checked>
-                    <span class="slider"></span>
-                </label>
+                <p><button id="togglePower">Вімк/Вимк</button></p>
             </div>
         </div>
-
-        <!-- Тогл для включения/выключения Telegram-бота -->
         <div class="row">
             <div class="column-1">
                 <p class="card-title">Телеграм бот</p>
-                <label class="switch">
-                    <input type="checkbox" id="toggleBot" checked>
-                    <span class="slider"></span>
-                </label>
+                <p><button id="togglePower">Вімк/Вимк</button></p>
             </div>
         </div>
-
-        <!-- Установка текущего времени -->
         <div class="row">
             <div class="column-1">
                 <p class="card-title">Встановити час</p>
-                <!--<input type="time" id="timePicker">-->
-                <input type="number" id="hourInput" min="0" max="23">
-                <button id="setTimeBtn">Зберегти</button>
+                <p>
+                    <input type="number" id="hourInput" min="0" max="23">
+                    <button id="setTimeBtn">Зберегти</button>
+                </p>
             </div>
         </div>
-
-        <!-- Установка времени автоматического выключения/включения -->
         <div class="row">
             <div class="column-1">
-                <p class="card-title">Період вимкнення</p>
+                <p class="card-title">Встановити період автоматичного вимкнення</p>
                 <p>
                     <label for="startHourInput">Початок, г:</label>
                     <input type="number" id="startHourInput" min="0" max="23">
@@ -68,7 +55,6 @@
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
