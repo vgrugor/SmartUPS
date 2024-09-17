@@ -6,10 +6,10 @@
 #include "PowerSupplyMonitor.h"
 #include "TimeManager.h"
 #include "Settings.h"
-#include "Scheduler.h"
+#include "TaskScheduler/Scheduler.h"
 #include "WebInterface.h"
-#include "BatteryMonitorTask.h"
-#include "PowerSupplyMonitorTask.h"
+#include "TaskScheduler/Tasks/BatteryMonitorTask.h"
+#include "TaskScheduler/Tasks/PowerSupplyMonitorTask.h"
 // Другие необходимые включения
 
 // Пины и конфигурации

@@ -1,7 +1,8 @@
-#include "Scheduler.h"
+#include "TaskScheduler/Scheduler.h"
 
 Scheduler::Scheduler() {}
-    void Scheduler::scheduleTask(Task *task) {
+
+void Scheduler::scheduleTask(Task *task) {
     _tasks.push_back(task);
 }
 

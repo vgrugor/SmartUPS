@@ -8,8 +8,8 @@
     #include "PowerSupplyMonitor.h"
     #include "TimeManager.h"
     #include "Settings.h"
-    #include "Scheduler.h"
-    #include "RouterControlTask.h"
+    #include "TaskScheduler/Scheduler.h"
+    #include "TaskScheduler/Tasks/RouterControlTask.h"
 
     class WebInterface {
         public:
