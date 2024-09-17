@@ -6,11 +6,13 @@
     class PowerController {
         public:
             PowerController(uint8_t controlPin);
-            void turnOn();
-            void turnOff();
-            bool isOn();
-        private:
+            virtual void turnOn();
+            virtual void turnOff();
+            virtual bool isOn() const;
+        
+        protected:
             uint8_t _controlPin;
             bool _state;
     };
+
 #endif // POWERCONTROLLER_H

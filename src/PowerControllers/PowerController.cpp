@@ -1,4 +1,4 @@
-#include "PowerController.h"
+#include "PowerControllers/PowerController.h"
 
 PowerController::PowerController(uint8_t controlPin) : _controlPin(controlPin), _state(false) {
     pinMode(_controlPin, OUTPUT);
@@ -15,6 +15,6 @@ void PowerController::turnOff() {
     _state = false;
 }
 
-bool PowerController::isOn() {
+bool PowerController::isOn() const {
     return _state;
 }
