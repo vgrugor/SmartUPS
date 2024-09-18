@@ -2,7 +2,7 @@
     #define POWERSUPPLYMONITORTASK_H
 
     #include <Arduino.h>
-    #include "Task.h"
+    #include "TaskScheduler/Task.h"
     #include "PowerSupplyMonitor.h"
 
     class PowerSupplyMonitorTask : public Task {

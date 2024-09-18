@@ -2,13 +2,18 @@
 
 RouterControlTask::RouterControlTask(
     uint8_t offHour, 
-    PowerController &powerController, 
+    MediaConverterPowerController &mediaConverterPowerController,
+    RouterPowerController &routerPowerController,
     TimeManager &timeManager
-) : _offHour(offHour), _powerController(powerController), _timeManager(timeManager) {}
+) : _offHour(offHour), 
+    _mediaConverterPowerController(mediaConverterPowerController), 
+    _routerPowerController(routerPowerController),
+    _timeManager(timeManager) 
+{}
 
 void RouterControlTask::execute() {
-    // Отключаем роутер
-    _powerController.turnOff();
+    _mediaConverterPowerController.turnOff();
+    _routerPowerController.turnOff();
 }
 
 bool RouterControlTask::isDue() {

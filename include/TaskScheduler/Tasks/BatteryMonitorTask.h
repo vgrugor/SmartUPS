@@ -2,7 +2,7 @@
     #define BATTERYMONITORTASK_H
 
     #include <Arduino.h>
-    #include "Task.h"
+    #include "TaskScheduler/Task.h"
     #include "BatteryMonitor.h"
 
     class BatteryMonitorTask : public Task {

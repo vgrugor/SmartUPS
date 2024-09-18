@@ -3,7 +3,7 @@
 
     #include <vector>
     #include <algorithm>
-    #include "TaskScheduler/Tasks/Task.h"
+    #include "TaskScheduler/Task.h"
 
     class Scheduler {
         public:

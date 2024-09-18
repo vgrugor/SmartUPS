@@ -6,6 +6,7 @@
     class PowerController {
         public:
             PowerController(uint8_t controlPin);
+            virtual ~PowerController() = 0;
             virtual void turnOn();
             virtual void turnOff();
             virtual bool isOn() const;

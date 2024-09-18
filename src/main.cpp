@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include "AccessPoint.h"
 #include <Arduino.h>
-#include "PowerController.h"
+#include "PowerControllers/Controllers/MediaConverterPowerController.h"
+#include "PowerControllers/Controllers/RouterPowerController.h"
+#include "PowerControllers/Controllers/TelegramBotPowerController.h"
 #include "BatteryMonitor.h"
 #include "PowerSupplyMonitor.h"
 #include "TimeManager.h"
@@ -13,12 +15,16 @@
 // Другие необходимые включения
 
 // Пины и конфигурации
-#define ROUTER_CONTROL_PIN D6
+#define ROUTER_POWER_CONTROL_PIN D6
+#define MEDIA_CONVERTER_POwER_CONTROL_PIN D6
+#define TELEGRAM_BOT_POWER_CONTROL_PIN D6
 #define BATTERY_ANALOG_PIN A0
 #define POWER_SENSE_PIN D2
 
 // Создание объектов
-PowerController powerController(ROUTER_CONTROL_PIN);
+MediaConverterPowerController mediaConverterPowerController(MEDIA_CONVERTER_POwER_CONTROL_PIN);
+RouterPowerController routerPowerController(ROUTER_POWER_CONTROL_PIN);
+TelegramBotPowerController telegramBotPowerController(TELEGRAM_BOT_POWER_CONTROL_PIN);
 BatteryMonitor batteryMonitor;
 PowerSupplyMonitor powerSupplyMonitor;
 TimeManager timeManager;
@@ -27,7 +33,9 @@ Scheduler scheduler;
 BatteryMonitorTask *batteryMonitorTask;
 PowerSupplyMonitorTask *powerSupplyMonitorTask;
 WebInterface webInterface(
-    powerController,
+    mediaConverterPowerController,
+    routerPowerController,
+    telegramBotPowerController,
     batteryMonitor,
     powerSupplyMonitor,
     timeManager,

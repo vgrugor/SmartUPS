@@ -5,6 +5,8 @@ PowerController::PowerController(uint8_t controlPin) : _controlPin(controlPin), 
     digitalWrite(_controlPin, LOW); // Предполагаем, что LOW = выключено
 }
 
+PowerController::~PowerController() {}
+
 void PowerController::turnOn() {
     digitalWrite(_controlPin, HIGH);
     _state = true;
