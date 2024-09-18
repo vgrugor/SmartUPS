@@ -1,4 +1,4 @@
-#include "PowerSupplyMonitor.h"
+#include "Monitors/PowerSupplyMonitor.h"
 
 PowerSupplyMonitor::PowerSupplyMonitor() : _mainsPower(true) {}
 

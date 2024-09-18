@@ -3,7 +3,7 @@
 
     #include <Arduino.h>
     #include "TaskScheduler/Task.h"
-    #include "BatteryMonitor.h"
+    #include "Monitors/BatteryMonitor.h"
 
     class BatteryMonitorTask : public Task {
         public:

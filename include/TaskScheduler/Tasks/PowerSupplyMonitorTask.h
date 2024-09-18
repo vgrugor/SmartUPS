@@ -3,7 +3,7 @@
 
     #include <Arduino.h>
     #include "TaskScheduler/Task.h"
-    #include "PowerSupplyMonitor.h"
+    #include "Monitors/PowerSupplyMonitor.h"
 
     class PowerSupplyMonitorTask : public Task {
         public:
