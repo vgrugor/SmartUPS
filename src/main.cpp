@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "AccessPoint.h"
+#include <AccessPoint.h>
 #include <Arduino.h>
 #include "PowerControllers/Controllers/MediaConverterPowerController.h"
 #include "PowerControllers/Controllers/RouterPowerController.h"
@@ -49,17 +49,17 @@ void setup() {
 
     accessPoint.start(); // Запускаем точку доступа
 
-    // Инициализация веб-интерфейса
-    webInterface.begin();
-    // Загрузка настроек
-    settings.load();
+    
+    webInterface.begin(); // Инициализация веб-интерфейса
+    settings.load(); // Загрузка настроек
+
     // Создание и планирование задач
     batteryMonitorTask = new BatteryMonitorTask(batteryMonitor, BATTERY_ANALOG_PIN, 4.2, 3.0);
     powerSupplyMonitorTask = new PowerSupplyMonitorTask(powerSupplyMonitor, POWER_SENSE_PIN);
     scheduler.scheduleTask(batteryMonitorTask);
     scheduler.scheduleTask(powerSupplyMonitorTask);
-    // Установка начального времени
-    timeManager.setHour(12); // Например, 12 часов дня
+    
+    timeManager.setHour(12); // Установка начального времени
 }
 
 void loop() {
