@@ -1,14 +1,18 @@
 #include "WebInterface.h"
 
 WebInterface::WebInterface(
-    PowerController &powerController,
+    MediaConverterPowerController &mediaConverterPowerController,
+    RouterPowerController &routerPowerController,
+    TelegramBotPowerController &telegramBotPowerController,
     BatteryMonitor &batteryMonitor,
     PowerSupplyMonitor &powerSupplyMonitor,
     TimeManager &timeManager,
     Settings &settings,
     Scheduler &scheduler
 ) : _server(80),
-    _powerController(powerController),
+    _mediaConverterPowerController(mediaConverterPowerController),
+    _routerPowerController(routerPowerController),
+    _telegramBotPowerController(telegramBotPowerController),
     _batteryMonitor(batteryMonitor),
     _powerSupplyMonitor(powerSupplyMonitor),
     _timeManager(timeManager),
@@ -28,7 +32,7 @@ void WebInterface::begin() {
     // Настройка обработчиков
     _server.on("/", HTTP_GET, std::bind(&WebInterface::handleRoot, this));
     _server.on("/api/status", HTTP_GET, std::bind(&WebInterface::handleGetStatus, this));
-    _server.on("/api/togglePower", HTTP_POST, std::bind(&WebInterface::handleTogglePower, this));
+    _server.on("/api/toggleInternetPower", HTTP_POST, std::bind(&WebInterface::handleToggleInternetPower, this));
     _server.on("/api/setTime", HTTP_POST, std::bind(&WebInterface::handleSetTime, this));
     _server.on("/api/setSettings", HTTP_POST, std::bind(&WebInterface::handleSetSettings, this));
     _server.onNotFound(std::bind(&WebInterface::handleNotFound, this));
@@ -77,23 +81,27 @@ void WebInterface::handleGetStatus() {
     String json = "{";
     json += "\"powerSource\":\"" + String(_powerSupplyMonitor.isMainsPower() ? "mains" : "battery") + "\",";
     json += "\"batteryLevel\":" + String(_batteryMonitor.getChargeLevel()) + ",";
-    json += "\"routerState\":\"" + String(_powerController.isOn() ? "on" : "off") + "\",";
+    json += "\"mediaConverterState\":\"" + String(_mediaConverterPowerController.isOn() ? "on" : "off") + "\",";
+    json += "\"routerState\":\"" + String(_routerPowerController.isOn() ? "on" : "off") + "\",";
+    json += "\"telegramBotState\":\"" + String(_telegramBotPowerController.isOn() ? "on" : "off") + "\",";
     json += "\"currentHour\":" + String(_timeManager.getHour());
     json += "}";
 
     _server.send(200, "application/json", json);
 }
 
-void WebInterface::handleTogglePower() {
-    bool powerState = _powerController.isOn();
+void WebInterface::handleToggleInternetPower() {
+    bool powerState = _mediaConverterPowerController.isOn();
 
     // Переключаем состояние питания
     if (powerState) {
-        _powerController.turnOff();
+        _mediaConverterPowerController.turnOff();
+        _routerPowerController.turnOff();
         // Отменяем запланированную задачу, если была
         //_scheduler.cancelTask(/* ссылка на задачу отключения */);
     } else {
-        _powerController.turnOn();
+        _mediaConverterPowerController.turnOn();
+        _routerPowerController.turnOn();
     
         // Проверяем, нужно ли добавить задачу на отключение через час
         uint8_t startHour, endHour;
@@ -107,7 +115,7 @@ void WebInterface::handleTogglePower() {
         ) {
             // Создаем задачу на отключение через час
             uint8_t offHour = (currentHour + 1) % 24; // Следующий час
-            RouterControlTask *routerControlTask = new RouterControlTask(offHour, _powerController, _timeManager);
+            RouterControlTask *routerControlTask = new RouterControlTask(offHour, _mediaConverterPowerController, _routerPowerController, _timeManager);
             _scheduler.scheduleTask(routerControlTask);
         }
     }

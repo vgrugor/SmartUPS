@@ -1,20 +1,24 @@
 #ifndef WEBINTERFACE_H
-#define WEBINTERFACE_H
+    #define WEBINTERFACE_H
 
     #include <ESP8266WebServer.h>
     #include <LittleFS.h>
-    #include "PowerController.h"
-    #include "BatteryMonitor.h"
-    #include "PowerSupplyMonitor.h"
+    #include "PowerControllers/Controllers/MediaConverterPowerController.h"
+    #include "PowerControllers/Controllers/RouterPowerController.h"
+    #include "PowerControllers/Controllers/TelegramBotPowerController.h"
+    #include "Monitors/BatteryMonitor.h"
+    #include "Monitors/PowerSupplyMonitor.h"
     #include "TimeManager.h"
     #include "Settings.h"
-    #include "Scheduler.h"
-    #include "RouterControlTask.h"
+    #include "TaskScheduler/Scheduler.h"
+    #include "TaskScheduler/Tasks/RouterControlTask.h"
 
     class WebInterface {
         public:
             WebInterface(
-                PowerController &powerController,
+                MediaConverterPowerController &mediaConverterPowerController,
+                RouterPowerController &routerPowerController,
+                TelegramBotPowerController &telegramBotPowerController,
                 BatteryMonitor &batteryMonitor,
                 PowerSupplyMonitor &powerSupplyMonitor,
                 TimeManager &timeManager,
@@ -26,12 +30,14 @@
         private:
             void handleRoot();
             void handleNotFound();
-            void handleTogglePower();
+            void handleToggleInternetPower();
             void handleSetTime();
             void handleSetSettings();
             void handleGetStatus();
             ESP8266WebServer _server;
-            PowerController &_powerController;
+            MediaConverterPowerController &_mediaConverterPowerController;
+            RouterPowerController &_routerPowerController;
+            TelegramBotPowerController &_telegramBotPowerController;
             BatteryMonitor &_batteryMonitor;
             PowerSupplyMonitor &_powerSupplyMonitor;
             TimeManager &_timeManager;
