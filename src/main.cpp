@@ -12,6 +12,7 @@
 #include "WebInterface.h"
 #include "TaskScheduler/Tasks/BatteryMonitorTask.h"
 #include "TaskScheduler/Tasks/PowerSupplyMonitorTask.h"
+#include "App.h"
 // Другие необходимые включения
 
 // Пины и конфигурации
@@ -32,6 +33,13 @@ Settings settings;
 Scheduler scheduler;
 BatteryMonitorTask *batteryMonitorTask;
 PowerSupplyMonitorTask *powerSupplyMonitorTask;
+App app(
+    POWER_SENSE_PIN,
+    BATTERY_ANALOG_PIN,
+    MEDIA_CONVERTER_POwER_CONTROL_PIN,
+    ROUTER_POWER_CONTROL_PIN,
+    TELEGRAM_BOT_POWER_CONTROL_PIN
+);
 WebInterface webInterface(
     mediaConverterPowerController,
     routerPowerController,

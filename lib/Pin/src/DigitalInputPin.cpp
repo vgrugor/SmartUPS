@@ -12,3 +12,11 @@ void DigitalInputPin::init() {
 bool DigitalInputPin::read() const {
     return digitalRead(_pin);
 }
+
+bool DigitalInputPin::isHigh() const {
+    return digitalRead(_pin) == HIGH;
+}
+
+bool DigitalInputPin::isLow() const {
+    return digitalRead(_pin) == LOW;
+}

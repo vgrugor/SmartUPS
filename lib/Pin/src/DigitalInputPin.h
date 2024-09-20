@@ -9,4 +9,6 @@ class DigitalInputPin : public Pin {
         DigitalInputPin(uint8_t pin, bool pullup = false);
         void init() override;
         bool read() const;
+        bool isHigh() const;
+        bool isLow() const;
 };
