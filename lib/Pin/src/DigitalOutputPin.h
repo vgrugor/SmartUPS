@@ -8,4 +8,7 @@ class DigitalOutputPin : public Pin {
         void init() override;
         void write(bool state);
         void toggle();
+        void turnOn();
+        void turnOff();
+        bool isOn();
 };
